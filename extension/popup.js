@@ -15,27 +15,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let userName = "";
 
-    // Handle OK button click based on the selected role
     okButton.addEventListener("click", function() {
         const selectedRole = roleSelect.value;
 
         if (selectedRole === "user") {
-            // Clear the popup and show the username input for the user
             roleSelection.style.display = "none";
             usernameSection.style.display = "block";
         } else if (selectedRole === "admin") {
-            // Show admin table directly
             roleSelection.style.display = "none";
             adminSection.style.display = "block";
             fetchAdminData();
         }
     });
 
-    // Handle Submit button for user name
     submitNameButton.addEventListener("click", function() {
         userName = document.getElementById("username").value;
         if (userName) {
-            // Clear the popup, show greeting, and fetch user applications
             usernameSection.style.display = "none";
             greeting.textContent = `Hello, ${userName}!`;
             userSection.style.display = "block";
@@ -43,27 +38,35 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Fetch running apps for User
     function fetchUserApps() {
         fetch("http://127.0.0.1:5000/apps")
             .then(response => response.json())
             .then(data => {
-                appList.innerHTML = "";  // Clear any previous apps
+                appList.innerHTML = "";
                 data.forEach(appName => {
                     const li = document.createElement("li");
                     li.textContent = appName;
                     appList.appendChild(li);
                 });
+
+                // Send username and running apps to the server
+                fetch("http://127.0.0.1:5000/submit-data", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: userName, apps: data })
+                })
+                .then(response => response.json())
+                .then(result => console.log("Data submitted:", result))
+                .catch(error => console.error("Error submitting data:", error));
             })
             .catch(error => console.error("Error fetching apps:", error));
     }
 
-    // Fetch data for Admin (e.g., list of users and their apps)
     function fetchAdminData() {
-        fetch("http://127.0.0.1:5000/admin-data")  // Modify to match your backend endpoint for admin data
+        fetch("http://127.0.0.1:5000/admin-data")
             .then(response => response.json())
             .then(data => {
-                adminTableBody.innerHTML = "";  // Clear any previous entries
+                adminTableBody.innerHTML = "";
                 data.forEach(user => {
                     const row = document.createElement("tr");
                     const nameCell = document.createElement("td");
