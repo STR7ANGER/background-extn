@@ -6,8 +6,45 @@
   <title>MetSpy</title>
 </head>
 <body>
-    <h1>Running Applications</h1>
+  <div id="role-selection">
+    <h2>Select Role</h2>
+    <label for="role-select">Role:</label>
+    <select id="role-select">
+      <option value="" disabled selected>Select your role</option>
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button id="ok-button">OK</button>
+  </div>
+
+  <!-- Section for entering the user name (hidden by default) -->
+  <div id="username-section" style="display: none;">
+    <h2>Enter Your Name</h2>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button id="submit-name">Submit</button>
+  </div>
+
+  <!-- Section for displaying User greeting and running applications -->
+  <div id="user-section" style="display: none;">
+    <h2 id="greeting"></h2>
+    <h3>Your Running Applications:</h3>
     <ul id="app-list"></ul>
-    <script src="popup.js"></script>
+  </div>
+
+  <!-- Section for displaying Admin table of all users and their apps -->
+  <div id="admin-section" style="display: none;">
+    <h3>Connected Users and Their Running Applications:</h3>
+    <table id="admin-table" border="1">
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Running Applications</th>
+        </tr>
+      </thead>
+      <tbody id="admin-table-body"></tbody>
+    </table>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
