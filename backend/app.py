@@ -1,8 +1,13 @@
 from flask import Flask, jsonify, request
-import sqlite3
+from pymongo import MongoClient
 import psutil
 
 app = Flask(__name__)
+
+# Connect to MongoDB Atlas
+client = MongoClient("mongodb+srv://aditya-28:Aditya28@cluster0.rg5pk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+db = client['user_data']
+user_apps_collection = db['user_app']
 
 # List of apps to track
 desired_apps = [
@@ -11,6 +16,12 @@ desired_apps = [
     "iexplore.exe", "Webex.exe", "Skype.exe", "slack.exe", "Discord.exe"
 ]
 
+# Clear the database collection at server start
+def clear_database():
+    user_apps_collection.delete_many({})  # Deletes all documents in the collection
+    print("Database cleared.")
+
+# Function to retrieve running desired applications
 def get_running_desired_apps():
     running_apps = set()
     for proc in psutil.process_iter(['pid', 'name']):
@@ -18,19 +29,15 @@ def get_running_desired_apps():
             running_apps.add(proc.info['name'])
     return list(running_apps) if running_apps else []
 
+# Add user data to MongoDB
 def add_user_data_to_db(username, apps):
-    conn = sqlite3.connect("users_data.db")
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO user_apps (username, apps) VALUES (?, ?)", (username, ",".join(apps)))
-    conn.commit()
-    conn.close()
+    user_apps_collection.insert_one({"username": username, "apps": apps})
 
+# Retrieve all user data from MongoDB
 def get_all_user_data():
-    conn = sqlite3.connect("users_data.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT username, apps FROM user_apps")
-    data = [{"name": row[0], "apps": row[1].split(",")} for row in cursor.fetchall()]
-    conn.close()
+    data = []
+    for doc in user_apps_collection.find():
+        data.append({"name": doc["username"], "apps": doc["apps"]})
     return data
 
 @app.route('/apps')
@@ -54,4 +61,5 @@ def admin_data():
     return jsonify(data)
 
 if __name__ == '__main__':
+    clear_database()  # Clear the database when the server starts
     app.run(debug=True)

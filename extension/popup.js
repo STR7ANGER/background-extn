@@ -25,11 +25,12 @@ document.addEventListener("DOMContentLoaded", function() {
             roleSelection.style.display = "none";
             adminSection.style.display = "block";
             fetchAdminData();
+            setInterval(fetchAdminData, 5000); // Poll every 5 seconds
         }
     });
 
     submitNameButton.addEventListener("click", function() {
-        userName = document.getElementById("username").value;
+        userName = document.getElementById("username").value.trim();
         if (userName) {
             usernameSection.style.display = "none";
             greeting.textContent = `Hello, ${userName}!`;
@@ -50,29 +51,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
 
                 // Send username and running apps to the server
-                fetch("http://127.0.0.1:5000/submit-data", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username: userName, apps: data })
-                })
-                .then(response => response.json())
-                .then(result => console.log("Data submitted:", result))
-                .catch(error => console.error("Error submitting data:", error));
+                submitUserData(userName, data);
             })
             .catch(error => console.error("Error fetching apps:", error));
+    }
+
+    function submitUserData(username, apps) {
+        fetch("http://127.0.0.1:5000/submit-data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, apps })
+        })
+        .then(response => response.json())
+        .then(result => console.log("Data submitted:", result))
+        .catch(error => console.error("Error submitting data:", error));
     }
 
     function fetchAdminData() {
         fetch("http://127.0.0.1:5000/admin-data")
             .then(response => response.json())
             .then(data => {
-                adminTableBody.innerHTML = "";
+                adminTableBody.innerHTML = ""; // Clear the table before updating
                 data.forEach(user => {
                     const row = document.createElement("tr");
                     const nameCell = document.createElement("td");
-                    nameCell.textContent = user.name;
                     const appsCell = document.createElement("td");
+
+                    nameCell.textContent = user.name;
                     appsCell.textContent = user.apps.join(", ");
+
                     row.appendChild(nameCell);
                     row.appendChild(appsCell);
                     adminTableBody.appendChild(row);
