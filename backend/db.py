@@ -5,9 +5,8 @@ def initialize_db():
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_apps (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        username TEXT UNIQUE NOT NULL,
-                        apps TEXT NOT NULL,
-                        timestamp INTEGER NOT NULL)''')
+                        username TEXT NOT NULL,
+                        apps TEXT NOT NULL)''')
     conn.commit()
     conn.close()
 
