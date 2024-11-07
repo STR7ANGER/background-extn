@@ -1,50 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetSpy</title>
-</head>
-<body>
-  <div id="role-selection">
-    <h2>Select Role</h2>
-    <label for="role-select">Role:</label>
-    <select id="role-select">
-      <option value="" disabled selected>Select your role</option>
-      <option value="user">User</option>
-      <option value="admin">Admin</option>
-    </select>
-    <button id="ok-button">OK</button>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MetSpy</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .section {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      .meeting-link {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+      }
+      button {
+        margin: 5px;
+        padding: 5px 10px;
+      }
+      input, select {
+        margin: 5px;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="role-selection" class="section">
+      <h2>Select Role</h2>
+      <label for="role-select">Role:</label>
+      <select id="role-select">
+        <option value="" disabled selected>Select your role</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button id="ok-button">OK</button>
+    </div>
 
-  <!-- Section for entering the user name (hidden by default) -->
-  <div id="username-section" style="display: none;">
-    <h2>Enter Your Name</h2>
-    <input type="text" id="username" placeholder="Enter your name" />
-    <button id="submit-name">Submit</button>
-  </div>
+    <div id="username-section" class="section" style="display: none">
+      <h2>Enter Your Name</h2>
+      <input type="text" id="username" placeholder="Enter your name" />
+      <button id="submit-name">Submit</button>
+    </div>
 
-  <!-- Section for displaying User greeting and running applications -->
-  <div id="user-section" style="display: none;">
-    <h2 id="greeting"></h2>
-    <h3>Your Running Applications:</h3>
-    <ul id="app-list"></ul>
-  </div>
+    <div id="user-section" class="section" style="display: none">
+      <h2 id="greeting"></h2>
+      <div id="meeting-link-display" class="meeting-link" style="display: none">
+        <p>This is your meeting link:</p>
+        <a id="meeting-url-link" href="#" target="_blank"></a>
+      </div>
+      <h3>Your Running Applications:</h3>
+      <ul id="app-list"></ul>
+    </div>
 
-  <!-- Section for displaying Admin table of all users and their apps -->
-  <div id="admin-section" style="display: none;">
-    <h3>Connected Users and Their Running Applications:</h3>
-    <table id="admin-table" border="1">
-      <thead>
-        <tr>
-          <th>User Name</th>
-          <th>Running Applications</th>
-        </tr>
-      </thead>
-      <tbody id="admin-table-body"></tbody>
-    </table>
-  </div>
+    <div id="admin-section" class="section" style="display: none">
+      <h2>Admin Panel</h2>
+      <div class="url-input-section">
+        <label for="meeting-url">Meeting URL:</label>
+        <input type="text" id="meeting-url" placeholder="Enter meeting URL" />
+        <button id="submit-url">Submit</button>
+        <p id="url-status" style="display: none; color: green;"></p>
+      </div>
+      <h3>Connected Users and Their Running Applications:</h3>
+      <table id="admin-table">
+        <thead>
+          <tr>
+            <th>User Name</th>
+            <th>Running Applications</th>
+          </tr>
+        </thead>
+        <tbody id="admin-table-body"></tbody>
+      </table>
+    </div>
 
-  <script src="popup.js"></script>
-</body>
+    <script src="popup.js"></script>
+  </body>
 </html>
