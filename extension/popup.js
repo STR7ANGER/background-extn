@@ -21,8 +21,12 @@ document.addEventListener("DOMContentLoaded", function () {
   let adminUpdateInterval;
   let urlCheckInterval;
 
+  // Restore user state from local storage
+  restoreUserState();
+
   okButton.addEventListener("click", function () {
     currentRole = roleSelect.value;
+    storeUserRole(currentRole);
     if (currentRole === "user") {
       roleSelection.style.display = "none";
       usernameSection.style.display = "block";
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   submitNameButton.addEventListener("click", function () {
     userName = document.getElementById("username").value.trim();
+    storeUsername(userName);
     if (userName) {
       usernameSection.style.display = "none";
       greeting.textContent = `Hello, ${userName}!`;
@@ -53,14 +58,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  function showUrlStatus(message) {
-    urlStatus.textContent = message;
-    urlStatus.style.display = "block";
-    setTimeout(() => {
-      urlStatus.style.display = "none";
-    }, 3000);
-  }
-
   function startAdminUpdates() {
     fetchAdminData(); // Initial fetch
     adminUpdateInterval = setInterval(fetchAdminData, 10000); // Update every 10 seconds
@@ -73,6 +70,37 @@ document.addEventListener("DOMContentLoaded", function () {
       fetchUserApps();
       fetchMeetingURL();
     }, 5000); // Check every 5 seconds
+  }
+
+  function restoreUserState() {
+    const storedRole = localStorage.getItem("currentRole");
+    const storedUsername = localStorage.getItem("username");
+
+    if (storedRole) {
+      currentRole = storedRole;
+      roleSelect.value = currentRole;
+      if (currentRole === "user") {
+        userSection.style.display = "block";
+        usernameSection.style.display = "none";
+        greeting.textContent = `Hello, ${storedUsername}!`;
+        userName = storedUsername;
+        fetchUserApps();
+        startUserUpdates();
+      } else if (currentRole === "admin") {
+        adminSection.style.display = "block";
+        startAdminUpdates();
+      }
+    } else {
+      roleSelection.style.display = "block";
+    }
+  }
+
+  function storeUserRole(role) {
+    localStorage.setItem("currentRole", role);
+  }
+
+  function storeUsername(username) {
+    localStorage.setItem("username", username);
   }
 
   function fetchUserApps() {
@@ -117,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function fetchMeetingURL() {
     if (!userName) return;
-    
+
     fetch(`http://127.0.0.1:5000/meeting-url?username=${userName}`)
       .then((response) => response.json())
       .then((data) => {
@@ -153,8 +181,16 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching admin data:", error));
   }
 
+  function showUrlStatus(message) {
+    urlStatus.textContent = message;
+    urlStatus.style.display = "block";
+    setTimeout(() => {
+      urlStatus.style.display = "none";
+    }, 3000);
+  }
+
   // Cleanup intervals when the window is closed
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener("beforeunload", () => {
     if (adminUpdateInterval) clearInterval(adminUpdateInterval);
     if (urlCheckInterval) clearInterval(urlCheckInterval);
   });
